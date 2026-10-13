@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AttritionIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">A</div>
+            <div>
+                <div class="brand-name">ATTRITION<span>IQ</span></div>
+                <div class="brand-sub">HR ANALYTICS PLATFORM</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a class="nav-item active" href="{{ url_for('dashboard') }}">
+                <span class="nav-icon">▦</span> Dashboard
+            </a>
+            <a class="nav-item" href="{{ url_for('employees') }}"><span class="nav-icon">♙</span> Employees</a>
+            <a class="nav-item" href="{{ url_for('predictions') }}"><span class="nav-icon">◉</span> Predictions</a>
+            <a class="nav-item" href="{{ url_for('analytics') }}"><span class="nav-icon">⌁</span> Analytics</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="role-card">
+                <div class="avatar">{{ role[0] }}</div>
+                <div>
+                    <strong>{{ role }}</strong>
+                    <small>Demo account</small>
+                </div>
+            </div>
+            <a class="logout" href="{{ url_for('logout') }}">↪ Sign out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="mobile-brand">ATTRITION<span>IQ</span></div>
+            <div class="topbar-right">
+                <span class="demo-pill">DEMO DATA</span>
+                <div class="top-user">
+                    <div class="avatar small">{{ role[0] }}</div>
+                    <div>
+                        <strong>{{ role }}</strong>
+                        <small>{{ "HR Manager" if role == "HR" else "Team Manager" }}</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content dashboard-page">
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">ATTRITIONIQ / {{ "HR WORKSPACE" if role == "HR" else "MANAGER WORKSPACE" }}</p>
+                    <h1>{{ dashboard_heading }}</h1>
+                    <p class="subtitle">{{ dashboard_subtitle }}</p>
+                </div>
+                <div class="scope-note">
+                    <span class="scope-role-icon">{{ role[0] }}</span>
+                    {{ scope_note }}
+                </div>
+            </div>
+
+            <div class="demo-banner">
+                <div class="banner-icon">!</div>
+                <div>
+                    <strong>Development preview · fictional employee records</strong>
+                    <p>This dashboard currently uses sample UI records, not the IBM HR dataset. No attrition rate, employee risk score, or model performance is being reported.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-hero">
+                <div class="dashboard-hero-copy">
+                    <span class="hero-kicker">{{ "ORGANIZATION VIEW" if role == "HR" else "RESTRICTED MANAGER VIEW" }}</span>
+                    <h2>{{ "Build a clear picture of workforce health." if role == "HR" else "Start with the people in your current view." }}</h2>
+                    <p>{{ "Review the sample workforce now. Once the verified dataset is connected, this space can surface measured attrition patterns and evaluated model insights." if role == "HR" else "Use the employee directory to review permitted sample records. Real manager-to-team assignments are not set up in this demo." }}</p>
+                    <div class="dashboard-hero-actions">
+                        <a class="hero-primary-link" href="{{ url_for('analytics') }}">Open workforce analytics <span>→</span></a>
+                        <a class="hero-secondary-link" href="{{ url_for('employees') }}">Browse employees</a>
+                    </div>
+                </div>
+                <div class="dashboard-hero-art" aria-hidden="true">
+                    <div class="hero-orbit orbit-one"></div>
+                    <div class="hero-orbit orbit-two"></div>
+                    <div class="hero-data-card">
+                        <span class="hero-data-label">MODEL STATUS</span>
+                        <strong>Not evaluated</strong>
+                        <div class="hero-data-track"><i></i></div>
+                        <small>Dataset setup required</small>
+                    </div>
+                    <div class="hero-spark spark-one"></div>
+                    <div class="hero-spark spark-two"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-metrics">
+                <article class="dashboard-metric">
+                    <div class="metric-icon metric-blue">♙</div>
+                    <span class="metric-label">EMPLOYEES IN SCOPE</span>
+                    <strong>{{ stats.employees }}</strong>
+                    <small>{{ "Organization-wide sample" if role == "HR" else "Restricted sample view" }}</small>
+                </article>
+                <article class="dashboard-metric">
+                    <div class="metric-icon metric-violet">▥</div>
+                    <span class="metric-label">DEPARTMENTS</span>
+                    <strong>{{ summary.department_count }}</strong>
+                    <small>Represented in this sample view</small>
+                </article>
+                <article class="dashboard-metric">
+                    <div class="metric-icon metric-green">◷</div>
+                    <span class="metric-label">AVG. SATISFACTION</span>
+                    <strong>{{ summary.average_satisfaction }}<em> / 5</em></strong>
+                    <small>Descriptive sample statistic only</small>
+                </article>
+                <article class="dashboard-metric readiness-metric">
+                    <div class="metric-icon metric-amber">!</div>
+                    <span class="metric-label">ATTRITION MODEL</span>
+                    <strong class="metric-status">Not evaluated</strong>
+                    <small>Real dataset not connected</small>
+                </article>
+            </div>
+
+            <div class="dashboard-section-heading">
+                <div><span class="section-overline">WORKFORCE SNAPSHOT</span><h2>Current sample overview</h2><p>Calculated from the fictional records visible to your role.</p></div>
+                <span class="sample-status"><i></i> SAMPLE DATA</span>
+            </div>
+            <div class="dashboard-content-grid">
+                <section class="panel dashboard-departments">
+                    <div class="dashboard-panel-heading"><div><h3>Employees by department</h3><p>Representation in current view</p></div><a class="panel-link" href="{{ url_for('analytics') }}">View details →</a></div>
+                    <div class="dashboard-department-list">
+                        {% for department in summary.departments[:5] %}
+                        <div class="dashboard-department-row">
+                            <div class="dashboard-department-meta"><span>{{ department.name }}</span><strong>{{ department.count }}</strong></div>
+                            <div class="department-track"><i style="width: {{ department.bar_width }}%"></i></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="chart-footnote">Descriptive summary only—not an attrition comparison.</div>
+                </section>
+                <section class="panel analysis-readiness">
+                    <div class="dashboard-panel-heading"><div><h3>Analysis readiness</h3><p>Current project setup</p></div><span class="readiness-pulse"></span></div>
+                    <div class="readiness-callout"><span class="readiness-callout-icon">↗</span><div><strong>Analysis not connected yet</strong><small>Results will follow dataset verification and model evaluation.</small></div></div>
+                    <div class="readiness-steps">
+                        <div class="readiness-step done"><i>1</i><span>Application workspace</span><b>READY</b></div>
+                        <div class="readiness-step"><i>2</i><span>Inspect verified dataset</span><b>UP NEXT</b></div>
+                        <div class="readiness-step"><i>3</i><span>Train and evaluate model</span><b>WAITING</b></div>
+                    </div>
+                    <a class="readiness-link" href="{{ url_for('predictions') }}">Open Prediction Studio <span>→</span></a>
+                </section>
+            </div>
+
+            <div class="dashboard-section-heading recent-heading">
+                <div><span class="section-overline">PEOPLE DIRECTORY</span><h2>Employees in your view</h2><p>Profile details are sample data; no individual predictions have been generated.</p></div>
+                <a href="{{ url_for('employees') }}" class="outline-btn">Open directory <span>→</span></a>
+            </div>
+
+            <div class="panel table-panel dashboard-table-panel">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Job Role</th>
+                                <th>Prediction</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for employee in employees %}
+                            <tr>
+                                <td><strong>{{ employee.id }}</strong></td>
+                                <td>{{ employee.department }}</td>
+                                <td>{{ employee.role }}</td>
+                                <td><span class="not-ready-label"><i></i> No model score</span></td>
+                                <td><a class="view-link" href="{{ url_for('employee_profile', employee_id=employee.id) }}">View profile</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <span>ATTRITIONIQ • B.Tech ML Project</span>
+                <span>Decision-support prototype • Not for automated employment decisions</span>
+            </footer>
+        </section>
+    </main>
+</div>
+</body>
+</html>

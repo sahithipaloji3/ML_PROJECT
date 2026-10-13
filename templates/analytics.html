@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | AttritionIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">A</div>
+            <div><div class="brand-name">ATTRITION<span>IQ</span></div><div class="brand-sub">HR ANALYTICS PLATFORM</div></div>
+        </div>
+        <nav class="side-nav">
+            <a class="nav-item" href="{{ url_for('dashboard') }}"><span class="nav-icon">▦</span> Dashboard</a>
+            <a class="nav-item" href="{{ url_for('employees') }}"><span class="nav-icon">♙</span> Employees</a>
+            <a class="nav-item" href="{{ url_for('predictions') }}"><span class="nav-icon">◉</span> Predictions</a>
+            <a class="nav-item active" href="{{ url_for('analytics') }}"><span class="nav-icon">⌁</span> Analytics</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="role-card"><div class="avatar">{{ role[0] }}</div><div><strong>{{ role }}</strong><small>Demo account</small></div></div>
+            <a class="logout" href="{{ url_for('logout') }}">↪ Sign out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="mobile-brand">ATTRITION<span>IQ</span></div>
+            <div class="topbar-right">
+                <span class="demo-pill">SAMPLE ANALYSIS</span>
+                <div class="top-user"><div class="avatar small">{{ role[0] }}</div><div><strong>{{ role }}</strong><small>{{ "HR Manager" if role == "HR" else "Team Manager" }}</small></div></div>
+            </div>
+        </header>
+
+        <section class="page-content workspace-page analytics-page">
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">ATTRITIONIQ / WORKFORCE INTELLIGENCE</p>
+                    <h1>Analytics &amp; Model Performance</h1>
+                    <p class="subtitle">A transparent view of the current sample workforce and the model-evaluation status.</p>
+                </div>
+                <div class="scope-note"><span class="live-dot"></span>{{ scope_note }}</div>
+            </div>
+
+            <div class="analytics-notice">
+                <span class="notice-symbol">!</span>
+                <div><strong>Sample workforce only · No attrition or model results</strong><p>The descriptive figures below are calculated from fictional UI records. They do not describe IBM data. Attrition rates and model metrics remain unavailable until the real dataset is loaded and evaluated.</p></div>
+            </div>
+
+            <div class="analytics-kpis">
+                <article class="analytics-kpi"><span class="kpi-label">SAMPLE EMPLOYEES</span><strong>{{ summary.employee_count }}</strong><span class="kpi-foot">Records in your current role scope</span><span class="kpi-icon">♙</span></article>
+                <article class="analytics-kpi"><span class="kpi-label">DEPARTMENTS</span><strong>{{ summary.department_count }}</strong><span class="kpi-foot">Represented in sample records</span><span class="kpi-icon">▥</span></article>
+                <article class="analytics-kpi"><span class="kpi-label">AVG. MONTHLY INCOME</span><strong>₹{{ "{:,}".format(summary.average_income) }}</strong><span class="kpi-foot">Sample records · descriptive only</span><span class="kpi-icon">₹</span></article>
+                <article class="analytics-kpi"><span class="kpi-label">AVG. JOB SATISFACTION</span><strong>{{ summary.average_satisfaction }}<small> / 5</small></strong><span class="kpi-foot">Sample records · not an attrition metric</span><span class="kpi-icon">◷</span></article>
+            </div>
+
+            <div class="analytics-section-title">
+                <div><p class="eyebrow">WORKFORCE SNAPSHOT</p><h2>What is in the sample?</h2></div>
+                <span class="sample-tag">DERIVED FROM {{ summary.employee_count }} FICTIONAL RECORDS</span>
+            </div>
+
+            <div class="analytics-grid">
+                <section class="panel department-panel">
+                    <div class="analytics-panel-title"><div><h3>Employees by department</h3><p>Record count and share of this sample</p></div><span class="mini-label">SAMPLE</span></div>
+                    <div class="department-bars">
+                        {% for department in summary.departments %}
+                        <div class="department-row">
+                            <div class="department-meta"><strong>{{ department.name }}</strong><span>{{ department.count }} <small>({{ department.percent }}%)</small></span></div>
+                            <div class="bar-track"><div class="bar-fill" style="width: {{ department.bar_width }}%"></div></div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="panel overtime-panel">
+                    <div class="analytics-panel-title"><div><h3>Overtime in sample</h3><p>Descriptive count—not an individual risk signal</p></div><span class="mini-label">SAMPLE</span></div>
+                    <div class="overtime-visual">
+                        <div class="overtime-number">{{ summary.overtime_count }}<span> / {{ summary.employee_count }}</span></div>
+                        <div class="overtime-bar-track"><div class="overtime-bar-fill" style="width: {{ summary.overtime_percent }}%"></div></div>
+                        <div class="overtime-caption"><strong>{{ summary.overtime_percent }}%</strong><span>of sample records marked overtime</span></div>
+                    </div>
+                    <div class="caution-text">Small, fictional samples should not be used to compare or judge departments.</div>
+                </section>
+            </div>
+
+            <div class="analytics-section-title model-results-title">
+                <div><p class="eyebrow">MODEL EVALUATION</p><h2>Performance &amp; reliability</h2></div>
+                <span class="not-evaluated-tag"><i></i> NOT EVALUATED</span>
+            </div>
+
+            <section class="panel evaluation-panel">
+                <div class="evaluation-empty">
+                    <div class="evaluation-empty-icon">⌁</div>
+                    <div><h3>Evaluation report will appear after model training</h3><p>There is no trained model or verified IBM dataset connected yet. Accuracy, precision, recall, F1-score, ROC-AUC, and confusion matrix are deliberately left blank—not estimated.</p></div>
+                </div>
+                <div class="metric-status-grid">
+                    <div><span>Accuracy</span><strong>Not evaluated</strong></div>
+                    <div><span>Precision</span><strong>Not evaluated</strong></div>
+                    <div><span>Recall</span><strong>Not evaluated</strong></div>
+                    <div><span>F1-score</span><strong>Not evaluated</strong></div>
+                    <div><span>ROC-AUC</span><strong>Not evaluated</strong></div>
+                    <div><span>Confusion matrix</span><strong>Not available</strong></div>
+                </div>
+            </section>
+
+            <div class="interpretation-grid">
+                <section class="interpretation-card recall-card"><span class="interpretation-mark">↗</span><div><span class="kpi-label">WHY RECALL MATTERS</span><h3>Measure missed cases, not just correct guesses</h3><p>Recall tells us how many actual attrition cases a model identifies. A low recall model may miss employees who later leave—but increasing recall can also create more false alarms.</p></div></section>
+                <section class="interpretation-card fairness-card"><span class="interpretation-mark">!</span><div><span class="kpi-label">FAIRNESS &amp; LIMITATIONS</span><h3>A flag is not a conclusion</h3><p>False positives can unfairly label employees. Any future model needs careful validation, subgroup review, privacy safeguards, and human oversight. Correlation is not causation.</p></div></section>
+            </div>
+
+            <footer class="footer"><span>ATTRITIONIQ • B.Tech ML Project</span><span>Decision-support prototype • Not for automated employment decisions</span></footer>
+        </section>
+    </main>
+</div>
+</body>
+</html>

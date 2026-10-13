@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Studio | AttritionIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">A</div>
+            <div><div class="brand-name">ATTRITION<span>IQ</span></div><div class="brand-sub">HR ANALYTICS PLATFORM</div></div>
+        </div>
+        <nav class="side-nav">
+            <a class="nav-item" href="{{ url_for('dashboard') }}"><span class="nav-icon">▦</span> Dashboard</a>
+            <a class="nav-item" href="{{ url_for('employees') }}"><span class="nav-icon">♙</span> Employees</a>
+            <a class="nav-item active" href="{{ url_for('predictions') }}"><span class="nav-icon">◉</span> Predictions</a>
+            <a class="nav-item" href="{{ url_for('analytics') }}"><span class="nav-icon">⌁</span> Analytics</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="role-card"><div class="avatar">{{ role[0] }}</div><div><strong>{{ role }}</strong><small>Demo account</small></div></div>
+            <a class="logout" href="{{ url_for('logout') }}">↪ Sign out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="mobile-brand">ATTRITION<span>IQ</span></div>
+            <div class="topbar-right">
+                <span class="demo-pill">MODEL NOT TRAINED</span>
+                <div class="top-user"><div class="avatar small">{{ role[0] }}</div><div><strong>{{ role }}</strong><small>{{ "HR Manager" if role == "HR" else "Team Manager" }}</small></div></div>
+            </div>
+        </header>
+
+        <section class="page-content workspace-page">
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">ATTRITIONIQ / PREDICTION STUDIO</p>
+                    <h1>Prediction Studio</h1>
+                    <p class="subtitle">Review employee context and model readiness before generating any risk estimate.</p>
+                </div>
+                <div class="scope-note"><span class="live-dot"></span>{{ scope_note }}</div>
+            </div>
+
+            <div class="workspace-hero prediction-hero">
+                <div class="hero-copy">
+                    <span class="hero-kicker">DECISION SUPPORT · NOT AN EMPLOYMENT DECISION</span>
+                    <h2>Understand the context.<br>Validate the model. Then assess.</h2>
+                    <p>Attrition risk should only be estimated by a trained, evaluated model using verified data. No score is produced in this demo.</p>
+                </div>
+                <div class="hero-status">
+                    <span class="status-orb">!</span>
+                    <div><strong>Prediction unavailable</strong><small>No dataset or trained pipeline connected</small></div>
+                    <span class="status-chip">SETUP REQUIRED</span>
+                </div>
+            </div>
+
+            <div class="workspace-grid prediction-grid">
+                <section class="panel studio-panel">
+                    <div class="workspace-section-head">
+                        <div><span class="section-index">01</span><div><h2>Select an employee</h2><p>Load a sample profile's current features for review.</p></div></div>
+                        <span class="section-tag">SAMPLE DATA</span>
+                    </div>
+
+                    <form method="GET" action="{{ url_for('predictions') }}" class="employee-picker">
+                        <label for="employee_id">Employee in your authorized view</label>
+                        <div class="picker-row">
+                            <select id="employee_id" name="employee_id" required>
+                                <option value="">Choose an employee</option>
+                                {% for employee in employees %}
+                                <option value="{{ employee.id }}" {% if selected_employee and selected_employee.id == employee.id %}selected{% endif %}>{{ employee.id }} · {{ employee.name }} — {{ employee.department }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="primary-btn" type="submit">Load profile</button>
+                        </div>
+                        {% if selection_error %}<p class="form-error" role="alert">{{ selection_error }}</p>{% endif %}
+                    </form>
+
+                    {% if selected_employee %}
+                    <div class="context-card">
+                        <div class="context-heading">
+                            <div class="avatar context-avatar">{{ selected_employee.name[0] }}</div>
+                            <div><strong>{{ selected_employee.name }}</strong><span>{{ selected_employee.id }} · {{ selected_employee.role }}</span></div>
+                            <span class="context-department">{{ selected_employee.department }}</span>
+                        </div>
+                        <div class="feature-grid">
+                            <div><span>Job satisfaction</span><strong>{{ selected_employee.satisfaction }} / 5</strong></div>
+                            <div><span>Work-life balance</span><strong>{{ selected_employee.work_life_balance }} / 5</strong></div>
+                            <div><span>Tenure</span><strong>{{ selected_employee.years }} years</strong></div>
+                            <div><span>Overtime</span><strong>{{ selected_employee.overtime }}</strong></div>
+                            <div><span>Monthly income</span><strong>₹{{ "{:,}".format(selected_employee.income) }}</strong></div>
+                            <div><span>Distance from home</span><strong>{{ selected_employee.distance_from_home }} km</strong></div>
+                        </div>
+                        <a class="text-action" href="{{ url_for('employee_profile', employee_id=selected_employee.id) }}">Open full profile <span>→</span></a>
+                    </div>
+                    {% else %}
+                    <div class="empty-picker">
+                        <span class="empty-picker-icon">⌕</span>
+                        <strong>Choose an employee to review their profile context</strong>
+                        <p>Only records permitted for your role appear in this list.</p>
+                    </div>
+                    {% endif %}
+                </section>
+
+                <aside class="panel model-panel">
+                    <div class="workspace-section-head">
+                        <div><span class="section-index">02</span><div><h2>Model readiness</h2><p>Requirements before prediction.</p></div></div>
+                    </div>
+                    <div class="readiness-score">
+                        <div class="readiness-ring"><strong>0<span>/4</span></strong></div>
+                        <div><strong>Not ready</strong><span>Pipeline setup has not started</span></div>
+                    </div>
+                    <ul class="readiness-list">
+                        <li><span class="readiness-mark">1</span><div><strong>Verified dataset</strong><small>Waiting for CSV and column review</small></div><span class="readiness-state">PENDING</span></li>
+                        <li><span class="readiness-mark">2</span><div><strong>Preprocessing pipeline</strong><small>Not configured</small></div><span class="readiness-state">PENDING</span></li>
+                        <li><span class="readiness-mark">3</span><div><strong>Trained model</strong><small>Not trained or saved</small></div><span class="readiness-state">PENDING</span></li>
+                        <li><span class="readiness-mark">4</span><div><strong>Held-out evaluation</strong><small>No measured metrics</small></div><span class="readiness-state">PENDING</span></li>
+                    </ul>
+                    <div class="integrity-note"><strong>Why is scoring disabled?</strong><p>Showing a made-up probability could mislead HR or managers. Prediction becomes available only after an actual model is validated.</p></div>
+                </aside>
+            </div>
+
+            <div class="responsible-use">
+                <span class="responsible-icon">i</span>
+                <div><strong>Responsible use</strong><p>A future model score will be an uncertain estimate—not proof, causation, or a reason by itself to take action on an employee.</p></div>
+            </div>
+            <footer class="footer"><span>ATTRITIONIQ • B.Tech ML Project</span><span>Decision-support prototype • Not for automated employment decisions</span></footer>
+        </section>
+    </main>
+</div>
+</body>
+</html>

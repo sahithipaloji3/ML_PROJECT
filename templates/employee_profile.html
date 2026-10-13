@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile | AttritionIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">A</div>
+            <div>
+                <div class="brand-name">ATTRITION<span>IQ</span></div>
+                <div class="brand-sub">HR ANALYTICS PLATFORM</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a class="nav-item" href="{{ url_for('dashboard') }}">
+                <span class="nav-icon">▦</span> Dashboard
+            </a>
+            <a class="nav-item active" href="{{ url_for('employees') }}"><span class="nav-icon">♙</span> Employees</a>
+            <a class="nav-item" href="{{ url_for('predictions') }}"><span class="nav-icon">◉</span> Predictions</a>
+            <a class="nav-item" href="{{ url_for('analytics') }}"><span class="nav-icon">⌁</span> Analytics</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="role-card">
+                <div class="avatar">{{ role[0] }}</div>
+                <div>
+                    <strong>{{ role }}</strong>
+                    <small>Demo account</small>
+                </div>
+            </div>
+            <a class="logout" href="{{ url_for('logout') }}">↪ Sign out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="mobile-brand">ATTRITION<span>IQ</span></div>
+            <div class="topbar-right">
+                <span class="demo-pill">DEMO DATA</span>
+                <div class="notification">◌</div>
+                <div class="top-user">
+                    <div class="avatar small">{{ role[0] }}</div>
+                    <div>
+                        <strong>{{ role }}</strong>
+                        <small>{{ "HR Manager" if role == "HR" else "Team Manager" }}</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content employee-profile-page">
+            {% if employee %}
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">ATTRITIONIQ / EMPLOYEE PROFILE</p>
+                    <h1>{{ employee.name }}</h1>
+                    <p class="subtitle">{{ employee.department }} · {{ employee.role }}</p>
+                </div>
+                <div class="scope-note">
+                    <span class="live-dot"></span>
+                    {{ access_note }}
+                </div>
+            </div>
+
+            <div class="demo-banner">
+                <div class="banner-icon">i</div>
+                <div>
+                    <strong>Fictional sample profile</strong>
+                    <p>This is a development example, not a real employee record. Prediction features are unavailable because a model has not been trained.</p>
+                </div>
+            </div>
+
+            <div class="stat-grid profile-stats">
+                <div class="stat-card">
+                    <div class="stat-top"><span>Employee ID</span><span class="stat-icon blue">#</span></div>
+                    <div class="stat-value profile-value">{{ employee.id }}</div>
+                    <div class="stat-label">Unique employee record</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top"><span>Prediction</span><span class="stat-icon red">!</span></div>
+                    <div class="stat-value profile-value stat-value-small">Unavailable</div>
+                    <div class="stat-label">No trained model available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top"><span>Probability</span><span class="stat-icon amber">%</span></div>
+                    <div class="stat-value profile-value stat-value-small">Not evaluated</div>
+                    <div class="stat-label">No model probability available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-top"><span>Location</span><span class="stat-icon green">⌂</span></div>
+                    <div class="stat-value profile-value">{{ employee.distance_from_home }} km</div>
+                    <div class="stat-label">Distance from home</div>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3>Employee Information</h3>
+                            <p>Core personal and role details</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-list">
+                        <div><span>Department</span><strong>{{ employee.department }}</strong></div>
+                        <div><span>Job role</span><strong>{{ employee.role }}</strong></div>
+                        <div><span>Monthly income</span><strong>₹{{ employee.income }}</strong></div>
+                        <div><span>Job satisfaction</span><strong>{{ employee.satisfaction }}/5</strong></div>
+                        <div><span>Work-life balance</span><strong>{{ employee.work_life_balance }}/5</strong></div>
+                        <div><span>Years at company</span><strong>{{ employee.years }} years</strong></div>
+                        <div><span>Years in current role</span><strong>{{ employee.years_in_role }} years</strong></div>
+                        <div><span>Overtime</span><strong>{{ employee.overtime }}</strong></div>
+                        <div><span>Distance from home</span><strong>{{ employee.distance_from_home }} km</strong></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h3>Prediction Status</h3>
+                            <p>Model output unavailable</p>
+                        </div>
+                    </div>
+
+                    <div class="prediction-box">
+                        <div class="prediction-status">No prediction has been generated.</div>
+                        <p class="prediction-text">No attrition prediction is available. The app needs the real dataset and a trained, evaluated model before it can calculate a probability. A future prediction will be a decision-support estimate, not certainty or a decision about an employee.</p>
+                        <a class="primary-btn" href="{{ url_for('employees') }}">Back to directory</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state panel">
+                <h3>Employee profile unavailable</h3>
+                <p>{{ access_note }}</p>
+                <a class="primary-btn" href="{{ url_for('employees') }}">Return to employees</a>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+</body>
+</html>

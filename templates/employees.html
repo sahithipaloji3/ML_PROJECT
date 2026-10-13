@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees | AttritionIQ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">A</div>
+            <div>
+                <div class="brand-name">ATTRITION<span>IQ</span></div>
+                <div class="brand-sub">HR ANALYTICS PLATFORM</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a class="nav-item" href="{{ url_for('dashboard') }}">
+                <span class="nav-icon">▦</span> Dashboard
+            </a>
+            <a class="nav-item active" href="{{ url_for('employees') }}"><span class="nav-icon">♙</span> Employees</a>
+            <a class="nav-item" href="{{ url_for('predictions') }}"><span class="nav-icon">◉</span> Predictions</a>
+            <a class="nav-item" href="{{ url_for('analytics') }}"><span class="nav-icon">⌁</span> Analytics</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="role-card">
+                <div class="avatar">{{ role[0] }}</div>
+                <div>
+                    <strong>{{ role }}</strong>
+                    <small>Demo account</small>
+                </div>
+            </div>
+            <a class="logout" href="{{ url_for('logout') }}">↪ Sign out</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="mobile-brand">ATTRITION<span>IQ</span></div>
+            <div class="topbar-right">
+                <span class="demo-pill">DEMO DATA</span>
+                <div class="notification">◌</div>
+                <div class="top-user">
+                    <div class="avatar small">{{ role[0] }}</div>
+                    <div>
+                        <strong>{{ role }}</strong>
+                        <small>{{ "HR Manager" if role == "HR" else "Team Manager" }}</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-content employees-page">
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">ATTRITIONIQ / EMPLOYEES</p>
+                    <h1>Employee Directory</h1>
+                    <p class="subtitle">Browse the employee records available in your current role scope.</p>
+                </div>
+                <div class="scope-note">
+                    <span class="live-dot"></span>
+                    {{ access_note }}
+                </div>
+            </div>
+
+            <div class="demo-banner">
+                <div class="banner-icon">i</div>
+                <div>
+                    <strong>UI preview — fictional sample employee data</strong>
+                    <p>These example records are not from the IBM HR dataset. Attrition risk is not shown because no real model has been trained.</p>
+                </div>
+            </div>
+
+            <div class="panel search-panel">
+                <form method="GET" class="filter-bar">
+                    <div class="search-box">
+                        <label for="search">Search</label>
+                        <input id="search" type="text" name="q" value="{{ search_query }}" placeholder="Employee ID or name">
+                    </div>
+
+                    <div class="select-box">
+                        <label for="department">Department</label>
+                        <select id="department" name="department">
+                            <option value="all" {% if current_department == 'all' %}selected{% endif %}>All departments</option>
+                            {% for department in departments %}
+                                <option value="{{ department }}" {% if current_department == department %}selected{% endif %}>{{ department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="select-box">
+                        <label for="role">Job role</label>
+                        <select id="role" name="role">
+                            <option value="all" {% if current_role == 'all' %}selected{% endif %}>All roles</option>
+                            {% for job_role in job_roles %}
+                                <option value="{{ job_role }}" {% if current_role == job_role %}selected{% endif %}>{{ job_role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="primary-btn">Apply</button>
+                        <a href="{{ url_for('employees') }}" class="secondary-btn">Clear filters</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="data-summary">
+                <div>
+                    <strong>{{ total_count }}</strong>
+                    <span>employees in current view</span>
+                </div>
+            </div>
+
+            {% if employees %}
+            <div class="panel table-panel employees-panel">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Job Role</th>
+                                <th>Monthly Income</th>
+                                <th>Job Sat.</th>
+                                <th>Years</th>
+                                <th>Overtime</th>
+                                <th>Prediction</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                            <tr>
+                                <td><strong>{{ employee.id }}</strong></td>
+                                <td>{{ employee.name }}</td>
+                                <td>{{ employee.department }}</td>
+                                <td>{{ employee.role }}</td>
+                                <td>₹{{ employee.income }}</td>
+                                <td>{{ employee.satisfaction }}/5</td>
+                                <td>{{ employee.years }}</td>
+                                <td>{{ employee.overtime }}</td>
+                                <td>Not available</td>
+                                <td><a class="view-link" href="{{ url_for('employee_profile', employee_id=employee.id) }}">Open profile</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state panel">
+                <h3>No matching employees found</h3>
+                <p>Try clearing the filters or searching by a different employee ID or name.</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+</div>
+</body>
+</html>
