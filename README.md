@@ -37,6 +37,15 @@ python app.py
 
 Open http://127.0.0.1:5000
 
+## Deploy on Render
+This Flask application cannot run on GitHub Pages. It can be deployed as a web service on Render using the `render.yaml` Blueprint in this repository:
+1. Sign in to Render and choose **New +** → **Blueprint**.
+2. Connect the `sahithipaloji3/ML_PROJECT` GitHub repository and deploy the Blueprint.
+3. Render installs the requirements, starts the app with Gunicorn, and generates `FLASK_SECRET_KEY`.
+4. Open the service URL Render provides.
+
+Future pushes to the `main` branch will trigger redeployments. The login accounts and employee records are hard-coded demo data; do not use real employee or confidential information in this deployment.
+
 ## Demo login
 HR:
 - Email: hr@attritioniq.com
